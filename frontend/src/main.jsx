@@ -7,7 +7,7 @@ import { store } from './store/store.js'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import axios from 'axios'
 
-axios.defaults.baseURL = import.meta.env.VITE_API_URL || 'https://url-shortner-c0sh.onrender.com';
+axios.defaults.baseURL = import.meta.env.VITE_API_URL || '';
 
 const queryClient = new QueryClient();
 
