@@ -1,0 +1,8 @@
+{
+  "name": "url-shrinker-root",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "cd frontend && npm install && npm run build && cd ../BACKEND && npm install",
+    "start": "cd BACKEND && npm start"
+  }
+}

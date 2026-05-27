@@ -26,13 +26,13 @@ export const createCustomShortUrl = asyncHandler(async (req, res) => {
     );
 });
 
-export const redirectFromShortUrl = asyncHandler(async (req, res) => {
+export const redirectFromShortUrl = asyncHandler(async (req, res, next) => {
     const { shortUrl } = req.params;
 
     const url = await getShortUrl(shortUrl);
 
     if (!url) {
-        throw new ApiError(404, "Short URL not found");
+        return next();
     }
 
     return res.redirect(url.full_url);

@@ -28,12 +28,21 @@ app.use(cookieParser());
 app.use('/api/create', shortUrl);
 app.use('/api/auth', authRoutes);
 
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Serve Static Files (Frontend Build)
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
 // Redirect Route
 app.get('/:shortUrl', redirectFromShortUrl);
 
-// Test Route
-app.get('/', (req, res) => {
-    res.send("Backend Running Successfully");
+// Catch all other routes to React Frontend
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
 });
 
 // Error Middleware
