@@ -1,0 +1,98 @@
+import { generateNanoId } from "../utils/helper.js";
+import { findShortUrlByCode, saveShortUrl } from "../dao/shortUrl.js";
+import validator from "validator";
+import ApiError from "../utils/ApiError.js";
+
+export const createShortUrlWithoutUser = async (url) => {
+   if (!url || typeof url !== 'string') {
+      throw new ApiError(400, "URL is required and must be a string");
+   }
+   url = url.trim();
+
+   if (!validator.isURL(url)) {
+      throw new ApiError(400, "Invalid URL");
+   }
+   
+   if (!/^https?:\/\//i.test(url)) {
+      url = 'http://' + url;
+   }
+
+   let shortUrl;
+   let existing = null;
+   let attempts = 0;
+   const maxAttempts = 3;
+
+   // Handle duplicate nanoid collisions properly by retrying
+   while (attempts < maxAttempts) {
+      shortUrl = generateNanoId(7);
+      existing = await findShortUrlByCode(shortUrl);
+      if (!existing) {
+         break;
+      }
+      attempts++;
+   }
+
+   if (existing) {
+      throw new ApiError(409, "Short URL collision occurred");
+   }
+
+   await saveShortUrl(shortUrl, url);
+
+   return {
+      short_url: shortUrl
+   };
+};
+
+export const createShortUrlWithUser = async (url, userId, slug = null) => {
+   if (!url || typeof url !== 'string') {
+      throw new ApiError(400, "URL is required and must be a string");
+   }
+   url = url.trim();
+
+   if (!validator.isURL(url)) {
+      throw new ApiError(400, "Invalid URL");
+   }
+   
+   if (!/^https?:\/\//i.test(url)) {
+      url = 'http://' + url;
+   }
+
+   let shortUrl;
+   
+   if (slug) {
+      slug = slug.trim();
+      if (slug.includes('/')) {
+         throw new ApiError(400, "Custom slug cannot contain slashes or be a full URL");
+      }
+      // Custom alias provided
+      const exists = await findShortUrlByCode(slug);
+      if (exists) {
+         throw new ApiError(409, "This custom url already exists");
+      }
+      shortUrl = slug;
+   } else {
+      // Generate nanoid
+      let existing = null;
+      let attempts = 0;
+      const maxAttempts = 3;
+
+      while (attempts < maxAttempts) {
+         shortUrl = generateNanoId(7);
+         existing = await findShortUrlByCode(shortUrl);
+         if (!existing) {
+            break;
+         }
+         attempts++;
+      }
+
+      if (existing) {
+         throw new ApiError(409, "Short URL collision occurred");
+      }
+   }
+
+   await saveShortUrl(shortUrl, url, userId);
+
+   return {
+      short_url: shortUrl
+   };
+};
