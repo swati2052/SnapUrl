@@ -145,12 +145,12 @@ const UrlForm = () => {
         <div className="mt-4 max-w-3xl mx-auto p-3 bg-green-50 border border-green-200 rounded-lg flex items-center justify-between">
           <div>
             <p className="text-xs font-bold text-green-800 mb-1">Successfully shortened!</p>
-            <a href={latestShortUrl.startsWith('http') ? latestShortUrl : `http://localhost:3000/${latestShortUrl}`} target="_blank" rel="noreferrer" className="text-green-700 font-medium hover:underline text-lg">
-              {latestShortUrl.startsWith('http') ? latestShortUrl : `http://localhost:3000/${latestShortUrl}`}
+            <a href={latestShortUrl.startsWith('http') ? latestShortUrl : `${window.location.origin}/${latestShortUrl}`} target="_blank" rel="noreferrer" className="text-green-700 font-medium hover:underline text-lg">
+              {latestShortUrl.startsWith('http') ? latestShortUrl : `${window.location.origin}/${latestShortUrl}`}
             </a>
           </div>
           <button
-            onClick={() => handleCopy(latestShortUrl.startsWith('http') ? latestShortUrl : `http://localhost:3000/${latestShortUrl}`, 'latest')}
+            onClick={() => handleCopy(latestShortUrl.startsWith('http') ? latestShortUrl : `${window.location.origin}/${latestShortUrl}`, 'latest')}
             className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-md shadow-sm transition-colors"
           >
             {copiedId === 'latest' ? "Copied!" : "Copy"}
@@ -186,7 +186,7 @@ const UrlForm = () => {
                   </tr>
                 ) : (
                   urls.map((url) => {
-                    const fullShortUrl = url.short_url.startsWith('http') ? url.short_url : `http://localhost:3000/${url.short_url}`;
+                    const fullShortUrl = url.short_url.startsWith('http') ? url.short_url : `${window.location.origin}/${url.short_url}`;
                     return (
                       <tr key={url._id} className="bg-white hover:bg-gray-50 transition-colors">
                         <td className="px-6 py-4 max-w-[200px] truncate" title={url.full_url}>
